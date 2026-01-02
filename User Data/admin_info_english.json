@@ -1,0 +1,128 @@
+{
+    "bio": {
+        "name": "Alexander Minasyan",
+        "title": "Aspiring Economics Researcher",
+        "description": "I am a hardworking and creative problem solver that loves to learn and gain experience"
+    },
+    "contact": {
+        "email": "alexander_minasyan@edu.aua.am",
+        "phone": "(098) 422922",
+        "residence": "Yerevan, Armenia"
+    },
+    "work": [
+        {
+            "title": "Research Assistant",
+            "name": "The Central Bank of Armenia",
+            "start-date": "10/2024", "end-date": "12/2024",
+            "tasks-achievements": [
+                "Helped with preliminary research and source gathering",
+                "Wrote small theses and summaries about various research topics",
+                "Editing and reviewed work done by the researchers for a multitude of projects"
+            ]
+        },
+        {
+            "title": "Web Designer",
+            "name": "The Diligan Training & Research Center of the CBA",
+            "start-date": "06/2024", "end-date": "08/2024",
+            "tasks-achievements": [
+                "Consulted the government on their transition to a new website",
+                "Single-handedly programming the site for the Dilijan Training & Research Center",
+                "Assisted with backend server functionality and data storage"
+            ]
+        },
+        {
+            "title": "Co-Creator & Board of Directors VP",
+            "name": "The Walks for Dogs Foundation",
+            "start-date": "06/2022", "end-date": "01/2023",
+            "tasks-achievements": [
+                "Created an officially registered non-profit organization with a partner",
+                "Developed a frontend, backend, and in-site payment system for the company website / platform",
+                "Acted as VP / COO of the Board and made decisions for the organization"
+            ]
+        },
+        {
+            "title": "Programming Intern",
+            "name": "Incore CJSC",
+            "start-date": "09/2023", "end-date": "01/2024",
+            "tasks-achievements": [
+                "Automated Excel processes using VBA and Power Automate.",
+                "Helped remove inaccuracies in the company's financial books.",
+                "Installed automation systems into the computers."
+            ]
+        },
+        {
+            "title": "Programming Intern",
+            "name": "Move2Armenia",
+            "start-date": "09/2023", "end-date": "01/2024",
+            "tasks-achievements": [
+                "Created a Telegram chatbot to facilitate clock in/clock out process.",
+                "Allowed for the employer to better keep track of employee actions and projects.",
+                "Designed Template for Custom Automated Employee Task Tracking System."
+            ]
+        }
+    ],
+    "education": [
+        {
+            "name": "The American University of Armenia",
+            "degree": "BA in Business",
+            "start-date": "08/2023",
+            "end-date": "PRESENT",
+            "courses-important": [
+                "Economics Track, Microeconomics & Macroeconomics, & Applied Statistics",
+                "Multivariable Calculus, Differential Equations, Linear Algebra, & Numerical Analysis",
+                "Management, Communications, & Finance"
+            ]
+        }, 
+        {
+            "name": "Miami and Glendale Colleges",
+            "degree": "General Education",
+            "start-date": "08/2020",
+            "end-date": "04/2023",
+            "courses-important": [
+                "Single-variable Calculus", "C for engineers",
+                "Various general education courses"
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "name": "The Walks for Dogs Foundation",
+            "start-date": "06/2022",
+            "end-date": "01/2023",
+            "description": "Created a non-profit organization to allow students to improve their community while getting sought after community service hours"
+        },
+        {
+            "name": "Gradar - Grade Calculator",
+            "start-date": "01/2024", "end-date": "PRESENT",
+            "description": "Currently an on-going project. Creating a website that allows students to better calculate and keep track of their grades."
+        }, 
+        {
+            "name": "Image Text Recognition",
+            "start-date": "06/2020", "end-date": "11/2021",
+            "description": "Created a text recognizer and image scanning app with full features and iOS App Store Upload."
+        },
+        {
+            "name": "Automatic Resume Creator",
+            "start-date": "01/2025", "end-date": "01/2025",
+            "description": "A personal project that allows to define which accolades and experiences I would like to include in the automatic generation of a resumé."
+        }
+    ],
+    "skills": [
+        { "name": "HTML, CSS, JavaScript", "category": "programming" }, { "name": "Xcode & Swift", "category": "programming" }, 
+        { "name": "Python", "category": "programming"}, { "name": "C++", "category": "programming" }, { "name": "Excel", "category": "general" }, 
+        { "name": "VBA Scripts", "category": "programming" }, { "name": "Calculus", "category": "math" }, 
+        { "name": "Differential Equations", "category": "math" }, { "name": "Linear Algebra", "category": "math" },
+        { "name": "Numerical Analysis", "category": "math" }, { "name": "Statistics", "category": "math" },
+        { "name": "Microeconomics", "category": "economics" }, { "name": "Macroeconomics", "category": "economics" }
+    ],
+    "languages": [
+        {
+            "name": "English",
+            "level": "Native or Bilingual Proficiency"
+        },
+        {
+            "name": "Russian",
+            "level": "Limited Working Proficiency"
+        }
+    ]
+}
