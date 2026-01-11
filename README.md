@@ -3,4 +3,4 @@ This program is to allow one to more easily create and adjust their resume for v
 
 [Result Test 1](Testing%20Results/testing.pdf)
 
-To Create a new template one simply has to layer Stacks and place objects within to display information and provide structure (Texts, Boxes, and Lines). One can create an entire resume now with like 30-40 lines of simple code. Go to the [Testing Script](testing_templates.py) to see. This gives the result [Partial Resume](Testing%20Results/testing_template_version.pdf).
+To Create a new template one simply has to layer Stacks and place objects within to display information and provide structure (Texts, Boxes, and Lines). One can create an entire resume now with like 30-40 lines of simple code. Go to the [Testing Script](testing_templates.py) to see. This gives the [partial result](Testing%20Results/testing_template_version.pdf).
