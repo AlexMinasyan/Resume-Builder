@@ -1,0 +1,135 @@
+{
+    "bio": {
+        "name": "Alexander Minasyan",
+        "title": "Aspiring Economics Researcher",
+        "description": "I am a hardworking and creative problem solver that loves to learn and gain experience"
+    },
+    "contact": {
+        "email": "my_email@my_email.com",
+        "phone": "+374 (00) 000000",
+        "residence": "Yerevan, Armenia",
+        "github": "AlexMinasyan"
+    },
+    "work": [
+        {
+            "title": "Research Assistant",
+            "name": "The Central Bank of Armenia",
+            "start-date": "10/2024", "end-date": "12/2024",
+            "tasks-achievements": [
+                "Helped with preliminary research and source gathering",
+                "Wrote small theses and summaries about various research topics",
+                "Editing and reviewed work done by the researchers for a multitude of projects"
+            ]
+        },
+        {
+            "title": "Web Designer",
+            "name": "The Dilijan Training & Research Center of the CBA",
+            "start-date": "06/2024", "end-date": "08/2024",
+            "tasks-achievements": [
+                "Consulted the government on their transition to a new website",
+                "Single-handedly programming the site for the Dilijan Training & Research Center",
+                "Assisted with backend server functionality and data storage"
+            ]
+        },
+        {
+            "title": "Co-Creator & Board of Directors VP",
+            "name": "The Walks for Dogs Foundation",
+            "start-date": "06/2022", "end-date": "01/2023",
+            "tasks-achievements": [
+                "Created an officially registered non-profit organization with a partner",
+                "Developed a frontend, backend, and in-site payment system for the company website / platform",
+                "Acted as VP / COO of the Board and made decisions for the organization"
+            ]
+        },
+        {
+            "title": "Technology Intern",
+            "name": "Incore CJSC",
+            "start-date": "09/2023", "end-date": "01/2024",
+            "tasks-achievements": [
+                "Automated Excel processes using VBA and Power Automate.",
+                "Helped remove inaccuracies in the company's financial books.",
+                "Installed automation systems into the computers."
+            ]
+        },
+        {
+            "title": "Programming Intern",
+            "name": "Move2Armenia",
+            "start-date": "09/2023", "end-date": "01/2024",
+            "tasks-achievements": [
+                "Created a Telegram chatbot to facilitate clock in/clock out process using Python.",
+                "Allowed for the employer to better keep track of employee actions and projects.",
+                "Designed Template for Custom Automated Employee Task Tracking System."
+            ]
+        }
+    ],
+    "education": [
+        {
+            "name": "The American University of Armenia",
+            "degree": "BA in Business",
+            "start-date": "08/2023",
+            "end-date": "PRESENT",
+            "courses-important": [
+                "Econ Track, Micro & Macro Econ, Developement and International Econ, & Applied Statistics",
+                "Multivariable Calculus, Differential Equations, Linear Algebra, Real & Numerical Analysis",
+                "Management, Communications, & Corporate Finance (Intro and Intermediate)"
+            ]
+        }, 
+        {
+            "name": "Miami and Glendale Colleges",
+            "degree": "General Education",
+            "start-date": "08/2020",
+            "end-date": "04/2023",
+            "courses-important": [
+                "Single-variable Calculus", "C for engineers",
+                "Various general education courses"
+            ]
+        }
+    ],
+    "projects": [
+        {
+            "name": "The Walks for Dogs Foundation",
+            "start-date": "06/2022",
+            "end-date": "01/2023",
+            "description": "Created a non-profit organization to allow students to improve their community while getting sought after community service hours"
+        },
+        {
+            "name": "Gradar - Grade Calculator",
+            "start-date": "01/2024", "end-date": "PRESENT",
+            "description": "Currently an on-going project. Creating a website that allows students to better calculate and keep track of their grades."
+        }, 
+        {
+            "name": "Image Text Recognition",
+            "start-date": "06/2020", "end-date": "11/2021",
+            "description": "Created a text recognizer and image scanning app with full features and iOS App Store download."
+        },
+        {
+            "name": "Automatic Resume Creator",
+            "start-date": "01/2025", "end-date": "01/2025",
+            "description": "A personal project that allows to define which accolades and experiences I would like to include in the resumé. Note: this resumé was generated by said program."
+        }
+    ],
+    "skills": [
+        { "name": "HTML, CSS, JavaScript", "category": "programming" }, { "name": "Xcode & Swift", "category": "programming" }, 
+        { "name": "Python", "category": "programming"}, { "name": "R", "category": "programming" }, { "name": "Excel / Google Sheets", "category": "general" }, 
+        { "name": "VBA / AppScripts", "category": "programming" }, { "name": "Calculus", "category": "math" }, { "name": "Linear Algebra", "category": "math" },
+        { "name": "Probability & Statistics", "category": "math" }, { "name": "Differential Equations", "category": "math" }, 
+        { "name": "Numerical Analysis", "category": "math" }, { "name": "Microeconomics", "category": "economics" }, { "name": "Macroeconomics", "category": "economics" },
+        { "name": "Real Analysis", "category": "math" }, { "name": "Functional Analysis", "category": "math" },
+        { "name": "Development Economics", "category": "economics" }, { "name": "International Economics", "category": "economics" },
+        { "name": "Classical ML Techniques", "category": "ml" }, { "name": "Econometrics", "category": "economics" }
+    ],
+    "languages": [
+        {
+            "name": "English",
+            "level": "Native or Bilingual Proficiency"
+        },
+        {
+            "name": "Russian",
+            "level": "Limited Working Proficiency"
+        },
+        {
+            "name": "Spanish",
+            "level": "Beginner / Personal Learning"
+        }
+    ]
+}

@@ -17,11 +17,56 @@ class Template():
     def __init__(self, user_data, template_specifications):
         self.user_data = user_data
 
+        self.bio = user_data['bio']
+        self.contact_info = user_data['contact']
         self.work_objects = user_data['work']
         self.education_objects = user_data['education']
         self.project_objects = user_data['projects']
         self.skill_objects = user_data['skills']
         self.language_objects = user_data['languages']
+
+    def generate_overall_template(self):
+        return HStack(0, 0, 210, 297, 0, [
+            # Left Hand Stack
+            VStack(0, 0, 50, 297, 0, [
+                Text(self.bio['name'], 24, x = 0, y = 0, width = 49, height = 12, priority = 0, font = 'dejavu-sans-mono', align = 'L', multiline = True),
+                Text(self.bio['title'], 12, 0, 0, 49, 4, 0, 'helvetica', 'L', True).with_margin({'top': 13}),
+                Text("Professional Summary", 13, 0, 0, 49, 6, 0, 'helvetica', 'L', True, True).with_margin({'top': 10}),
+                Text(self.bio['description'], 9, 0, 0, 48, 4, 0, 'helvetica', 'L', True).with_margin({'top': 2}),
+                Text('Contact', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 15}),
+                VStack(0, 0, 49, 0, 0, [
+                    Text(self.contact_info['email'], 8, 0, 0, 49, 4, 0), 
+                    Text(self.contact_info['phone'], 8, 0, 0, 49, 4, 0),
+                    Text(self.contact_info['residence'], 8, 0, 0, 49, 4, 0),
+                    Text(self.contact_info['github'], 8, 0, 0, 49, 4, 0, link = 'https://github.com/AlexMinasyan') # Links don't work yet
+                ], 2).with_padding({'top': 2}),
+                Text('Skills', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 7.5}),
+                FreeStack(0, 0, 47, 0, 0, 
+                        [my_template.generate_skill_object(i) for i in range(0, min(len(my_template.skill_objects), 25))], 
+                    1, 1, margin = {'top': 2.5}).with_padding({'left': 1, 'right': 1}),
+                Text('Languages', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 10}),
+                VStack(0, 0, 49, 0, 0, [
+                    my_template.generate_language_object(i) for i in range(0, min(len(my_template.language_objects), 4))
+                ])
+            ]).with_padding({'top': 5, 'left': 1}), 
+
+            # Righthand Stack
+            VStack(0, 0, 160, 297, 0, [
+                Text('Work Experience', 25, 0, 0, 157, 6, 0).with_margin({'top': 3, 'left': 1.5}),
+                VStack(0, 0, 150, 0, 0, [
+                    my_template.generate_work_object(i) for i in range(0, min(len(my_template.work_objects), 4))
+                ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
+                Text('Education', 25, 0, 0, 157, 6, 0).with_margin({'top': 4, 'left': 1.5}),
+                VStack(0, 0, 150, 0, 0, [
+                    my_template.generate_education_object(i) for i in range(0, min(len(my_template.education_objects), 2))
+                ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
+                Text('Personal Projects', 25, 0, 0, 157, 6, 0).with_margin({'top': 2, 'left': 1.5}),
+                Table(0, 0, 150, 0, 0, [
+                    my_template.generate_project_object(i) for i in range(0, min(len(my_template.project_objects), 4))
+                ], (2, 2), 0, 8, margin = {'top': 1, 'left': 4})
+            ])
+                
+        ], gap_filler = VLine(0, 0, 297, 0, 0.1))
 
     def generate_work_object(self, index: int):
         work_object = self.work_objects[index]
@@ -88,73 +133,35 @@ class Template():
 
 
 # MARK: Generation
-with open(f'User Data/admin_info_english.json') as f:
+testing = False
+with open(f'User Data/dummy_info.json') as f:
     user_data = json.loads(f.read())
 
     new_user_data = { 'contact': user_data['contact'], 'bio': user_data['bio'], 'skills': user_data['skills'] }
  
     # The capping of a max number of options has not been implemented
     remaining_headers = sorted(list(user_data.keys() - ['bio', 'contact', 'skills']))
-    # selected_categories = []
-    # for header in remaining_headers: # We will ignore skills for now as you can have like 20.
-    #     title = f'Please Select the {header.capitalize()} Objects you want'
-    #     options = [obj['name'] for obj in user_data[header]]
-    #     selected_categories.append(pick(options, title, multiselect = True, min_selection_count = 0))
+    if testing == False:
+        selected_categories = []
+        for header in remaining_headers: # We will ignore skills for now as you can have like 20.
+            title = f'Please Select the {header.capitalize()} Objects you want'
+            options = [obj['name'] for obj in user_data[header]]
+            selected_categories.append(pick(options, title, multiselect = True, min_selection_count = 0))
 
-    # for i in range(0, len(remaining_headers)):
-    #     sel_obj = selected_categories[i]
-    #     sel_obj_indices = [selection[1] for selection in sel_obj]
-    #     new_user_data[remaining_headers[i]] = [user_data[remaining_headers[i]][j] for j in sel_obj_indices]
-
-    # Just Selects the top items (for testing)
-    for i in range(0, len(remaining_headers)):
-        new_user_data[remaining_headers[i]] = [user_data[remaining_headers[i]][j] for j in range(0, min(len(user_data[remaining_headers[i]]), 4))]
+        for i in range(0, len(remaining_headers)):
+            sel_obj = selected_categories[i]
+            sel_obj_indices = [selection[1] for selection in sel_obj]
+            new_user_data[remaining_headers[i]] = [user_data[remaining_headers[i]][j] for j in sel_obj_indices]
+    else:
+        # Just Selects the top items (for testing)
+        for i in range(0, len(remaining_headers)):
+            new_user_data[remaining_headers[i]] = [user_data[remaining_headers[i]][j] for j in range(0, min(len(user_data[remaining_headers[i]]), 4))]
     # print(json.dumps(new_user_data, indent = 4))
 
     my_template = Template(new_user_data, template_specifications = {})
 
 # Note: (210, 297) is the mm size of A4 paper.
-full_page_hstack_2 = HStack(0, 0, 210, 297, 0, [
-
-    # Left Hand Stack
-    VStack(0, 0, 50, 297, 0, [
-        Text("Alexander Minasyan", 24, x = 0, y = 0, width = 49, height = 12, priority = 0, font = 'dejavu-sans-mono', align = 'L', multiline = True),
-        Text("Professional Summary", 13, 0, 0, 49, 6, 0, 'helvetica', 'L', True, True).with_margin({'top': 16}),
-        Text('I am a hardworking and creative problem solver that loves to learn and gain experience', 9, 0, 0, 48, 4, 0, 'helvetica', 'L', True).with_margin({'top': 2}),
-        Text('Contact', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 15}),
-        VStack(0, 0, 49, 0, 0, [
-            Text('alexander_minasyan@edu.aua.am', 8, 0, 0, 49, 4, 0), 
-            Text('(098) 422-922', 8, 0, 0, 49, 4, 0),
-            Text('Yerevan, Armenia', 8, 0, 0, 49, 4, 0),
-            Text('GitHub: AlexMinasyan', 8, 0, 0, 49, 4, 0, link = 'https://github.com/AlexMinasyan') # Links don't work yet
-        ], 2).with_padding({'top': 2}),
-        Text('Skills', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 7.5}),
-        FreeStack(0, 0, 47, 0, 0, 
-                [my_template.generate_skill_object(i) for i in range(0, min(len(my_template.skill_objects), 25))], 
-            1, 1, margin = {'top': 2.5}).with_padding({'left': 1, 'right': 1}),
-        Text('Languages', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 10}),
-        VStack(0, 0, 49, 0, 0, [
-            my_template.generate_language_object(i) for i in range(0, min(len(my_template.language_objects), 4))
-        ])
-    ]).with_padding({'top': 5, 'left': 1}), 
-
-    # Righthand Stack
-    VStack(0, 0, 160, 297, 0, [
-        Text('Work Experience', 25, 0, 0, 157, 6, 0).with_margin({'top': 3, 'left': 1.5}),
-        VStack(0, 0, 150, 0, 0, [
-            my_template.generate_work_object(i) for i in range(0, min(len(my_template.work_objects), 4))
-        ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
-        Text('Education', 25, 0, 0, 157, 6, 0).with_margin({'top': 4, 'left': 1.5}),
-        VStack(0, 0, 150, 0, 0, [
-            my_template.generate_education_object(i) for i in range(0, min(len(my_template.education_objects), 2))
-        ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
-        Text('Personal Projects', 25, 0, 0, 157, 6, 0).with_margin({'top': 2, 'left': 1.5}),
-        Table(0, 0, 150, 0, 0, [
-            my_template.generate_project_object(i) for i in range(0, min(len(my_template.project_objects), 4))
-        ], (2, 2), 0, 8, margin = {'top': 1, 'left': 4})
-    ])
-        
-], gap_filler = VLine(0, 0, 297, 0, 0.1))
+full_page_hstack_2 = my_template.generate_overall_template()
 
 
 pdf = FPDF(orientation = 'portrait', format = 'A4')
