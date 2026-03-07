@@ -46,7 +46,7 @@ class ImportantAspect:
     def get_generated_elements(self, experience_number) -> list:
         end_date_box_obj = {
             'name': f'end_date_box_{experience_number}', 'type': 'B', 'x1': self.start_x + 10, 'x2': self.start_x + 28, 'y1': self.start_y, 'y2': self.start_y + 5, 
-            'font': 'dejavu-sans-mono', 'size': 0.3, 'align': 'C', 'priority': 0
+            'font': 'dejavu-sans-mono', 'size': 0.3, 'align': 'C', 'priority': 0, 'foreground': 0x000000
         }
         end_date_text_obj = {
             'name': f'end_date_box_text_{experience_number}', 'type': 'T', 'x1': self.start_x + 10, 'x2': self.start_x + 28, 'y1': self.start_y + 1, 'y2': self.start_y + 4.5, 
@@ -187,7 +187,7 @@ class Language:
 # MARK: Concrete Parts
 work_x = 50
 elements_part_1 = [
-    {'name': 'sideborder', 'type': 'L', 'x1': 50, 'x2': 50, 'y1': 0, 'y2': 297},
+    {'name': 'sideborder', 'type': 'L', 'x1': 50, 'x2': 50, 'y1': 0, 'y2': 297, 'size': 0.2},
 
     {'name': 'name', 'type': 'T', 'x1': 1, 'x2': 49, 'y1': 5, 'y2': 17, 'font': 'dejavu-sans-mono', 'size': 24, 'multiline': True, 'align': 'L'},
 
@@ -198,8 +198,9 @@ elements_part_1 = [
     {'name': 'email', 'type': 'T', 'x1': 1, 'x2': 49, 'y1': 68, 'y2': 72, 'font': 'helvetica', 'size': 9, 'multiline': False, 'align': 'L'},
     {'name': 'phone', 'type': 'T', 'x1': 1, 'x2': 49, 'y1': 74, 'y2': 78, 'font': 'helvetica', 'size': 9, 'multiline': False, 'align': 'L'},
     {'name': 'residence', 'type': 'T', 'x1': 1, 'x2': 49, 'y1': 80, 'y2': 84, 'font': 'helvetica', 'size': 9, 'multiline': False, 'align': 'L'},
+    {'name': 'github', 'type': 'T', 'x1': 1, 'x2': 49, 'y1': 86, 'y2': 90, 'font': 'helvetica', 'size': 9, 'multiline': False, 'align': 'L'},
 
-    {'name': 'skills', 'type': 'T', 'text': 'Skills', 'x1': 1, 'x2': 49, 'y1': 90, 'y2': 95, 'font': 'helvetica', 'size': 13, 'multiline': False, 'align': 'L', 'underline': 1},
+    {'name': 'skills', 'type': 'T', 'text': 'Skills', 'x1': 1, 'x2': 49, 'y1': 96, 'y2': 101, 'font': 'helvetica', 'size': 13, 'multiline': False, 'align': 'L', 'underline': 1},
 
     {'name': 'work_experience', 'type': 'T', 'text': 'Work Experience', 'x1': work_x + 3, 'x2': 210, 'y1': 3, 'y2': 9, 'size': 25},
 ]
@@ -271,7 +272,7 @@ all_elements += project_objects
 # MARK: Fill Skills
 skills_data = user_data['skills']
 skill_objects = []
-skill_x, skill_y = (2, 98)
+skill_x, skill_y = (2, 104)
 for i, skill in enumerate(skills_data):
     skill_object = Skill(skill)
     if skill_x + skill_object.get_width() > 46: # 46 => 50 left-hand bar - 2mm margins on each side
@@ -287,7 +288,8 @@ all_elements += {'name': 'languages', 'type': 'T', 'text': 'Languages', 'x1': 1,
                  'y2': skill_y + 15, 'font': 'helvetica', 'size': 13, 'multiline': False, 'align': 'L', 'underline': 1},
 
 # MARK: Language Skills
-languages_data = user_data['languages']
+languages_data = user_data['languages'][0:3:2]
+print(languages_data)
 languages_objects = []
 language_x, language_y = (2, skill_y + 16)
 for i, language in enumerate(languages_data):
@@ -304,10 +306,15 @@ templ = FlexTemplate(pdf, elements = all_elements)
 templ['name'] = 'Alexander Minasyan'
 templ['bio'] = 'I am a hardworking and creative problem solver that loves to learn and gain experience'
 templ['email'] = 'alexander_minasyan@edu.aua.am'
-templ['phone'] = '(098) 422922'
+templ['phone'] = '+374 98 422922'
 templ['residence'] = 'Yerevan, Armenia'
+templ['github'] = 'GitHub: AlexMinasyan'
 
+pdf.set_font("helvetica", size=12)
+pdf.text(x= 20, y = 20, txt = 'GitHub')
+width = pdf.get_string_width('GitHub')
+pdf.link(x = 20, y = 16, w=width, h=4, link="https://github.com/PyFPDF/fpdf2")
 
 templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 pdf.set_margin(0)
-pdf.output('testing.pdf')
+pdf.output('Testing Results/testing.pdf')
