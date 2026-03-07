@@ -10,8 +10,5 @@ Thumbs.db
 
 # Specific Files #
 ##################
-Testing Results/testing.pdf
-Testing Results/templace_version_2.pdf
 User Data/admin_info_english.json
-User Data/admin_info_russian.json
 __pycache__
