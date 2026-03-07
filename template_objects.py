@@ -405,59 +405,60 @@ def to_matrix(l, n):
 
 
 # MARK: Testing
-full_page_stack_2 = Table(0, 0, 0, 0, 0, [
-    VStack(0, 0, 78.5, 0, 0, [
+if __name__=="__main__":
+    full_page_stack_2 = Table(0, 0, 0, 0, 0, [
+        VStack(0, 0, 78.5, 0, 0, [
+            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
+            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
+        ]),
+        VStack(0, 0, 78.5, 0, 0, [
+            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
+            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
+        ]),
+        VStack(0, 0, 78.5, 0, 0, [
+            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
+            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
+        ]),
+        VStack(0, 0, 78.5, 0, 0, [
+            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
+            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
+        ])
+    ], (2, 2), 5, 9, margin = {'top': 20, 'left': 20}).with_border(0.2)#.add_single_border('left', 0.4)
+
+    testing_stack = VStack(0, 0, 78.5, 0, 0, [
         Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
         Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-    ]),
-    VStack(0, 0, 78.5, 0, 0, [
-        Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-        Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-    ]),
-    VStack(0, 0, 78.5, 0, 0, [
-        Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-        Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-    ]),
-    VStack(0, 0, 78.5, 0, 0, [
-        Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-        Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-    ])
-], (2, 2), 5, 9, margin = {'top': 20, 'left': 20}).with_border(0.2)#.add_single_border('left', 0.4)
-
-testing_stack = VStack(0, 0, 78.5, 0, 0, [
-    Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-    Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-]).with_margin({'top': 20, 'left': 20})
+    ]).with_margin({'top': 20, 'left': 20})
 
 
-testing_text = Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 9, 0).with_margin({'top': 20, 'left': 20}).with_border(0.2, offset={'left': 2})#.add_single_border('left', 0.2, 0)
-testing_offset = {'left': 2, 'right': 2, 'bottom': 0}
-testing_bottom_border = HLine(testing_text.x + testing_text.left_margin - testing_offset['left'], 
-                              testing_text.y + testing_text.top_margin + testing_text.height + testing_offset['bottom'], 
-                              testing_text.width + testing_offset['left'] + testing_offset['right'], 
-                              0, 0.3)
+    testing_text = Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 9, 0).with_margin({'top': 20, 'left': 20}).with_border(0.2, offset={'left': 2})#.add_single_border('left', 0.2, 0)
+    testing_offset = {'left': 2, 'right': 2, 'bottom': 0}
+    testing_bottom_border = HLine(testing_text.x + testing_text.left_margin - testing_offset['left'], 
+                                testing_text.y + testing_text.top_margin + testing_text.height + testing_offset['bottom'], 
+                                testing_text.width + testing_offset['left'] + testing_offset['right'], 
+                                0, 0.3)
 
-work_stack = VStack(0, 0, 150, 0, 0, [
-    Text('DEC 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
-    VStack(6, 0, 140, 0, 0, [
-        Text('Research Assistant', 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
-        Text('The Central Bank of Armenia', 12, 0, 0, 134, 4, 0, 'helvetica'),
-            VStack(4, 0, 131, 0, 0, [
-                Text(x, 8, 0, 0, 126, 3, 0) for x in ['Point 1', 'Point 2', 'Point 3']
-            ], 0.8).with_margin({'top': 0.5})
-        ]).with_border(0.3).add_single_border('left', 1, 0),
-    Text('OCT 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
-]).with_margin({'left': 5})
+    work_stack = VStack(0, 0, 150, 0, 0, [
+        Text('DEC 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
+        VStack(6, 0, 140, 0, 0, [
+            Text('Research Assistant', 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
+            Text('The Central Bank of Armenia', 12, 0, 0, 134, 4, 0, 'helvetica'),
+                VStack(4, 0, 131, 0, 0, [
+                    Text(x, 8, 0, 0, 126, 3, 0) for x in ['Point 1', 'Point 2', 'Point 3']
+                ], 0.8).with_margin({'top': 0.5})
+            ]).with_border(0.3).add_single_border('left', 1, 0),
+        Text('OCT 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
+    ]).with_margin({'left': 5})
 
-# for obj in full_page_stack_2.render_item_as_flex_template_objects():
-#     print(obj.__repr__())
+    # for obj in full_page_stack_2.render_item_as_flex_template_objects():
+    #     print(obj.__repr__())
 
-pdf = FPDF(orientation = 'portrait', format = 'A4')
-pdf.add_page()
-pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
+    pdf = FPDF(orientation = 'portrait', format = 'A4')
+    pdf.add_page()
+    pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
 
-templ = FlexTemplate(pdf, elements = work_stack.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
-templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
+    templ = FlexTemplate(pdf, elements = work_stack.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
+    templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 
-pdf.set_margin(0)
-pdf.output('Testing Results/testing_template_version_2.pdf')
+    pdf.set_margin(0)
+    pdf.output('Testing Results/testing_template_version_2.pdf')
