@@ -305,8 +305,8 @@ templ = FlexTemplate(pdf, elements = all_elements)
 
 templ['name'] = 'Alexander Minasyan'
 templ['bio'] = 'I am a hardworking and creative problem solver that loves to learn and gain experience'
-templ['email'] = 'alexander_minasyan@edu.aua.am'
-templ['phone'] = '+374 98 422922'
+templ['email'] = 'my_email@my_email.com'
+templ['phone'] = '+374 00 000000'
 templ['residence'] = 'Yerevan, Armenia'
 templ['github'] = 'GitHub: AlexMinasyan'
 
