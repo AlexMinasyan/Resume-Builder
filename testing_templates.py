@@ -38,7 +38,7 @@ class Template():
                     Text(self.contact_info['email'], 8, 0, 0, 49, 4, 0), 
                     Text(self.contact_info['phone'], 8, 0, 0, 49, 4, 0),
                     Text(self.contact_info['residence'], 8, 0, 0, 49, 4, 0),
-                    Text(self.contact_info['github'], 8, 0, 0, 49, 4, 0, link = 'https://github.com/AlexMinasyan') # Links don't work yet
+                    Text(f'GitHub: {self.contact_info['github']}', 8, 0, 0, 49, 4, 0, link = 'https://github.com/AlexMinasyan') # Links don't work yet
                 ], 2).with_padding({'top': 2}),
                 Text('Skills', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 7.5}),
                 FreeStack(0, 0, 47, 0, 0, 
