@@ -16,11 +16,11 @@ def convert_date_to_desired_format(date, original_format, desired_format):
 class Template():
     def __init__(self, user_data, template_specifications):
         self.user_data = user_data
-
         self.bio = user_data['bio']
         self.contact_info = user_data['contact']
         self.work_objects = user_data['work']
         self.education_objects = user_data['education']
+        self.research_objects = user_data['resear ch']
         self.project_objects = user_data['projects']
         self.skill_objects = user_data['skills']
         self.language_objects = user_data['languages']
@@ -60,7 +60,11 @@ class Template():
                 VStack(0, 0, 150, 0, 0, [
                     my_template.generate_education_object(i) for i in range(0, min(len(my_template.education_objects), 2))
                 ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
-                Text('Personal Projects', 25, 0, 0, 157, 6, 0).with_margin({'top': 2, 'left': 1.5}),
+                Text('Ongoing Research', 25, 0, 0, 157, 6, 0).with_margin({'top': 2, 'left': 1.5}),
+                VStack(0, 0, 150, 0, 0, [
+                    my_template.generate_research_object(i) for i in range(0, min(len(my_template.research_objects), 2))
+                ], 3, VLine(15, 0, 2.7, 0, 0.3)).with_margin({'top': 2}),
+                Text('Personal Projects', 25, 0, 0, 157, 6, 0).with_margin({'top': 8.5, 'left': 1.5}),
                 Table(0, 0, 150, 0, 0, [
                     my_template.generate_project_object(i) for i in range(0, min(len(my_template.project_objects), 4))
                 ], (2, 2), 0, 8, margin = {'top': 1, 'left': 4})
@@ -72,7 +76,7 @@ class Template():
         work_object = self.work_objects[index]
         
         start_date = convert_date_to_desired_format(work_object['start-date'], '%m/%Y', '%b %Y').upper()
-        end_date = convert_date_to_desired_format(work_object['end-date'], '%m/%Y', '%b %Y').upper()
+        end_date = 'PRESENT' if work_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(work_object['end-date'], '%m/%Y', '%b %Y').upper()
 
         work_stack = VStack(0, 0, 150, 0, 0, [
             Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
@@ -108,6 +112,15 @@ class Template():
 
         return work_stack
     
+    def generate_research_object(self, index: int):
+        research_object = self.research_objects[index]
+
+        research_stack = VStack(0, 0, 150, 0, 0, [
+            Text(research_object['name'], 9, 6, 0, 134, 5, 0),
+            Text(research_object['description'], 7, 6, 0, 134, 3, 0, multiline = True)
+        ])
+        return research_stack
+    
     def generate_project_object(self, index: int):
         project_object = self.project_objects[index]
 
@@ -115,7 +128,6 @@ class Template():
             Text(project_object['name'], 11, 0, 0, 75, 5, 0),
             Text(project_object['description'], 8, 0, 0, 75, 3, 0, multiline = True)
         ])
-
         return project_stack
     
     def generate_skill_object(self, index: int):
@@ -131,10 +143,9 @@ class Template():
         ])
         
 
-
 # MARK: Generation
 testing = False
-with open(f'User Data/dummy_info.json') as f:
+with open(f'User Data/admin_info_english.json') as f:
     user_data = json.loads(f.read())
 
     new_user_data = { 'contact': user_data['contact'], 'bio': user_data['bio'], 'skills': user_data['skills'] }
@@ -182,7 +193,10 @@ templ = FlexTemplate(pdf, elements = all_rendering_items)
 templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 
 pdf.set_margin(0)
-pdf.output('Testing Results/testing_template_version.pdf')
+output_link = 'Testing Results/my_actual_resume.pdf'
+pdf.output(output_link)
 
 # For Template Specifications, I can later add a character limit for the fit
 # Figure out how to rearrange the fit for a FreeStack (make it a parameter `auto_fit`)
+# Multiline Freestack
+# Handling Missing Sections
