@@ -8,7 +8,7 @@ Input your information in the [json](User%20Data/dummy_info.json) file. Then sim
 ```
 python3 testing_templates.py false dummy_info [prebuild_file]
 ```
-If you want to supply a [prebuild_file] ([specs.json](specs.json)), then for each cateogory of object (e.g. `work`, `education`, etc.) supply a list of indices for the specific objects that you want to use. You can view the file as an example. If not, then the terminal will prompt you for the specific objects that you want. 
+Note that if you do not supply a second argument (the data file), then it will prompt for the choice. If you do not supply a first arguement (the testing argument) it will default to testing the program with the generic default from [dummy info](dummy_info.json) with generic specifications. If you want to supply a [prebuild_file] ([specs.json](specs.json)), then for each cateogory of object (e.g. `work`, `education`, etc.) supply a list of indices for the specific objects that you want to use. You can view the file as an example. If not, then the terminal will prompt you for the specific objects that you want. 
 
 
 ### How to Create a New Template
