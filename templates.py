@@ -1,4 +1,4 @@
-from template_objects import HStack, VStack, Text, FreeStack, VLine, Table
+from template_objects import HStack, VStack, Text, FreeStack, VLine, Table, Border, BorderType
 from datetime import datetime
 from functools import reduce
 import operator
@@ -11,9 +11,6 @@ def convert_date_to_desired_format(date, original_format, desired_format):
     return datetime.strftime(date, desired_format)
 
 def keys_exists(element, *keys):
-    '''
-    Check if *keys (nested) exists in `element` (dict).
-    '''
     if not isinstance(element, dict):
         raise AttributeError('keys_exists() expects dict as first argument.')
     if len(keys) == 0:
@@ -36,9 +33,9 @@ class Template():
         self.user_data = user_data
         self.template_specifications = template_specifications
 
-        self.check_given_data()
+        self.__check_given_data()
     
-    def check_given_data(self):
+    def __check_given_data(self):
         usr_dat = self.user_data
         tem_spe = self.template_specifications
 
@@ -70,9 +67,9 @@ class TimelineWithResearchTemplate(Template):
             # Left Hand Stack
             VStack(0, 0, 50, 297, 0, [
                 Text(self.user_data['bio']['name'], 24, x = 0, y = 0, width = 49, height = 12, priority = 0, font = 'dejavu-sans-mono', align = 'L', multiline = True),
-                Text(self.user_data['bio']['title'], 12, 0, 0, 49, 4, 0, 'helvetica', 'L', True).with_margin({'top': 13}),
-                Text("Professional Summary", 13, 0, 0, 49, 6, 0, 'helvetica', 'L', True, True).with_margin({'top': 10}),
-                Text(self.user_data['bio']['description'], 9, 0, 0, 48, 4, 0, 'helvetica', 'L', True).with_margin({'top': 2}),
+                Text(self.user_data['bio']['title'], 12, 0, 0, 49, 4, 0, 'helvetica', 'L', multiline = True).with_margin({'top': 13}),
+                Text("Professional Summary", 13, 0, 0, 49, 6, 0, 'helvetica', 'L', multiline = True, underline = True).with_margin({'top': 10}),
+                Text(self.user_data['bio']['description'], 9, 0, 0, 48, 4, 0, 'helvetica', 'L', multiline = True).with_margin({'top': 2}),
                 Text('Contact', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 15}),
                 VStack(0, 0, 49, 0, 0, [
                     Text(self.user_data['contact']['email'], 8, 0, 0, 49, 4, 0), 
@@ -117,15 +114,15 @@ class TimelineWithResearchTemplate(Template):
         end_date = 'PRESENT' if work_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(work_object['end-date'], '%m/%Y', '%b %Y').upper()
 
         work_stack = VStack(0, 0, 150, 0, 0, [
-            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
+            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)),
             VStack(6, 0, 140, 0, 0, [
                 Text(work_object['title'], 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
                 Text(work_object['name'], 12, 0, 0, 134, 4, 0, 'helvetica'),
                 VStack(4, 0, 131, 0, 0, [
                     Text(f' - {x}', 8, 0, 0, 126, 3, 0) for x in work_object['tasks-achievements']
                 ], 0.8).with_margin({'top': 0.5})
-            ]).add_single_border('left', 0.3, 0, offset = {'left': 1, 'bottom': 1}),
-            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
+            ]).with_borders(Border(BorderType.LEFT, 0.3, 0, offset = {'left': 1, 'bottom': 1})),
+            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)).with_margin({'top': 1.5}),
         ]).with_margin({'left': 5})
 
         return work_stack
@@ -135,15 +132,15 @@ class TimelineWithResearchTemplate(Template):
         end_date = 'PRESENT' if edu_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(edu_object['end-date'], '%m/%Y', '%b %Y').upper()
 
         work_stack = VStack(0, 0, 150, 0, 0, [
-            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
+            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)),
             VStack(6, 0, 140, 0, 0, [
                 Text(edu_object['degree'], 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
                 Text(edu_object['name'], 12, 0, 0, 134, 4, 0, 'helvetica'),
                 VStack(4, 0, 131, 0, 0, [
                     Text(f' - {x}', 8, 0, 0, 126, 3, 0) for x in edu_object['courses-important']
                 ], 0.8).with_margin({'top': 0.5})
-            ]).add_single_border('left', 0.3, 0, offset = {'left': 1, 'bottom': 1}),
-            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
+            ]).with_borders(Border(BorderType.LEFT, 0.3, 0, offset = {'left': 1, 'bottom': 1})),
+            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)).with_margin({'top': 1.5}),
         ]).with_margin({'left': 5})
 
         return work_stack
@@ -163,14 +160,13 @@ class TimelineWithResearchTemplate(Template):
         return project_stack
     
     def generate_skill_object(self, skill):
-        return Text(skill['name'], 8, 0, 0, 1.7 * len(skill['name']) + 2.1, 5, 0, 'dejavu-sans-mono').with_border()
+        return Text(skill['name'], 8, 0, 0, 1.7 * len(skill['name']) + 2.1, 5, 0, 'dejavu-sans-mono').with_borders(Border())
 
     def generate_language_object(self, lang):
         return VStack(0, 0, 48, 0, 0, [
             Text(lang['name'], 10, 0, 0, 48, 5, 0, 'helvetica').with_margin({'left': 1}), 
             Text(lang['level'], 8, 0, 0, 47, 4, 0).with_margin({'left': 2})
         ])
-    
 
 
 #MARK: TimelineBaseTemplate
@@ -235,15 +231,15 @@ class TimelineBaseTemplate(Template):
         end_date = 'PRESENT' if work_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(work_object['end-date'], '%m/%Y', '%b %Y').upper()
 
         work_stack = VStack(0, 0, 150, 0, 0, [
-            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
+            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)),
             VStack(6, 0, 140, 0, 0, [
                 Text(work_object['title'], 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
                 Text(work_object['name'], 12, 0, 0, 134, 4, 0, 'helvetica'),
                 VStack(4, 0, 131, 0, 0, [
                     Text(f' - {x}', 8, 0, 0, 126, 3, 0) for x in work_object['tasks-achievements']
                 ], 0.8).with_margin({'top': 0.5})
-            ]).add_single_border('left', 0.3, 0, offset = {'left': 1, 'bottom': 1}),
-            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
+            ]).with_borders(Border(BorderType.LEFT, 0.3, 0, offset = {'left': 1, 'bottom': 1})),
+            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)).with_margin({'top': 1.5}),
         ]).with_margin({'left': 5})
 
         return work_stack
@@ -253,15 +249,15 @@ class TimelineBaseTemplate(Template):
         end_date = 'PRESENT' if edu_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(edu_object['end-date'], '%m/%Y', '%b %Y').upper()
 
         work_stack = VStack(0, 0, 150, 0, 0, [
-            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
+            Text(end_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)),
             VStack(6, 0, 140, 0, 0, [
                 Text(edu_object['degree'], 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
                 Text(edu_object['name'], 12, 0, 0, 134, 4, 0, 'helvetica'),
                 VStack(4, 0, 131, 0, 0, [
                     Text(f' - {x}', 8, 0, 0, 126, 3, 0) for x in edu_object['courses-important']
                 ], 0.8).with_margin({'top': 0.5})
-            ]).add_single_border('left', 0.3, 0, offset = {'left': 1, 'bottom': 1}),
-            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
+            ]).with_borders(Border(BorderType.LEFT, 0.3, 0, offset = {'left': 1, 'bottom': 1})),
+            Text(start_date, 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_borders(Border(size = 0.3)).with_margin({'top': 1.5}),
         ]).with_margin({'left': 5})
 
         return work_stack
@@ -281,7 +277,7 @@ class TimelineBaseTemplate(Template):
         return project_stack
     
     def generate_skill_object(self, skill):
-        return Text(skill['name'], 8, 0, 0, 1.7 * len(skill['name']) + 2.1, 5, 0, 'dejavu-sans-mono').with_border()
+        return Text(skill['name'], 8, 0, 0, 1.7 * len(skill['name']) + 2.1, 5, 0, 'dejavu-sans-mono').with_borders(Border())
 
     def generate_language_object(self, lang):
         return VStack(0, 0, 48, 0, 0, [

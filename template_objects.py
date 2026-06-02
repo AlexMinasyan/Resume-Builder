@@ -2,11 +2,47 @@
 import copy, math
 from PIL import ImageFont
 from fpdf import FlexTemplate, FPDF
+from enum import Enum
 
 # MARK: Document Object
+class BorderType(Enum):
+    FULL = 'full'
+    TOP = 'top'
+    RIGHT = 'right'
+    BOTTOM = 'bottom'
+    LEFT = 'left'
+
+class Border():
+    def __init__(self, border_type: BorderType = BorderType.FULL, size: int = 0.2, color = 0x000000, offset = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+        self.border_type = border_type
+        self.size = size
+        self.color = color
+        self.offset = offset
+
+        if not set(self.offset.keys()).issubset({'top', 'right', 'bottom', 'left'}):
+            raise Exception("you must specific at least one of 'top', 'right', 'bottom', or 'left' and no others keys.")
+
+        self.offset['top'] = self.offset['top'] if 'top' in self.offset.keys() else 0
+        self.offset['right'] = self.offset['right'] if 'right' in self.offset.keys() else 0
+        self.offset['bottom'] = self.offset['bottom'] if 'bottom' in self.offset.keys() else 0
+        self.offset['left'] = self.offset['left'] if 'left' in self.offset.keys() else 0
+
+    def __getitem__(self, key):
+        if key == 'size':
+            return self.size
+        if key == 'color':
+            return self.color
+        if key == 'offset':
+            return self.offset
+        if key == 'side':
+            return self.border_type.value
+        
+    def __str__(self):
+        return f'{self.border_type.value.capitalize()} - Border size: {self.size}), color: {self.color}, offset: ({tuple(self.offset.values())})'
+
 # Note: Single Borders cannot have color so far, but that will be changed soon
 class Document_Object():
-    def __init__(self, x: float, y: float, width: float, height: float, priority: int, 
+    def __init__(self, x: float, y: float, width: float, height: float, priority: int,
                  margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
         self.x = x
         self.y = y
@@ -14,6 +50,7 @@ class Document_Object():
         self.height = height
         self.priority = priority
         self.margin = margin
+        self.borders = []
         self.side_borders = []
 
         self.set_margin(margin)
@@ -40,43 +77,16 @@ class Document_Object():
         self.set_margin(margin)
         return self
 
-    # Adds a Border 
-    def add_border(self, size = 0.2, color = 0x000000, offset = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
-        if not set(offset.keys()).issubset({'top', 'right', 'bottom', 'left'}):
-            raise Exception("you must specific at least one of 'top', 'right', 'bottom', or 'left' and no others keys.")
-        
-        offset['top'] = offset['top'] if 'top' in offset.keys() else 0
-        offset['right'] = offset['right'] if 'right' in offset.keys() else 0
-        offset['bottom'] = offset['bottom'] if 'bottom' in offset.keys() else 0
-        offset['left'] = offset['left'] if 'left' in offset.keys() else 0
-
-        self.total_border_size = size
-        self.total_border_color = color
-        self.total_border_offset = offset
-
-    def add_single_border(self, side, size = 0.2, color = 0x000000, offset = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
-        # Making Sure that the offsets are in order
-        if not set(offset.keys()).issubset({'top', 'right', 'bottom', 'left'}):
-            raise Exception("you must specific at least one of 'top', 'right', 'bottom', or 'left' and no others keys.")
-        
-        if not side in ['top', 'right', 'bottom', 'left']:
-            raise Exception('You must pick a valid side among "top", "right", "bottom", "left"')
-        
-        remaining_offsets = ['top', 'right', 'bottom', 'left'] - offset.keys()
-        for off in remaining_offsets:
-            offset[off] = 0
-
-        self.side_borders.append(
-            {'side': side, 'size': size, 'color': color, 'offset': offset}
-        )
-        return self
-        
-
+    def add_borders(self, *args: Border):
+        for border in args:
+            self.borders.append(border)     
+    
     # Re-returns the object with a border
-    def with_border(self, size = 0.2, color = 0x000000, offset = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
-        self.add_border(size, color, offset)
+    def with_borders(self, *args: Border):
+        self.add_borders(*args)
         return self
 
+    # Returns position adjusted for margin
     def __true_pos(self):
         return {'x1': self.x + self.left_margin, 'y1': self.y + self.top_margin, 'x2': self.x + self.left_margin + self.width + self.right_margin, 'y2': self.y + self.top_margin + self.height + self.bottom_margin }
 
@@ -89,41 +99,36 @@ class Document_Object():
             'x1': self.__true_pos()['x1'], 'x2': self.__true_pos()['x2'], 'y1': self.__true_pos()['y1'], 'y2': self.__true_pos()['y2']
         }
         return [base_template_object]
-    
-    def render_borders(self):
+
+    # Renders all of the borders
+    def render_borders(self): # Note: The `final_border` object can be changed to a `Box` or `Line` that is then rendered, may save space and be more organized
         all_sub_template_objects = []
-        if self.total_border_size != 0:
-            border = {
-                'name': 'BORDER', 'priority': self.priority - 1, 'type': 'B', 
-                'size': self.total_border_size, 'foreground': self.total_border_color, 
-                'x1': self.__true_pos()['x1'] - self.total_border_offset['left'], 'x2': self.__true_pos()['x2'] + self.total_border_offset['right'],
-                'y1': self.__true_pos()['y1'] - (self.total_border_offset['top'] + 0.2), 'y2': self.__true_pos()['y2'] + self.total_border_offset['bottom']
-            }
-            all_sub_template_objects.append(border)
-
-        generated_side_borders = []
-        for border in self.side_borders:
-            if border['side'] in ['top', 'bottom']:
-                y_pos = self.__true_pos()['y1'] - border['offset']['top'] if border['side'] == 'top' else self.__true_pos()['y2'] + border['offset']['bottom']
-                line = {
-                    'name': f'SIDE_BORDER_{border['side'].upper()}', 'priority': self.priority + 1, 'type': 'L',
-                    'size': border['size'], 'foreground': border['color'],
-                    'x1': self.__true_pos()['x1'] - border['offset']['left'], 'y1': y_pos, 'y2': y_pos,
-                    'x2': self.__true_pos()['x2'] + border['offset']['right']# - (self.__true_pos()['x1'] - border['offset']['left'])
+        for border in self.borders:
+            if border.border_type == BorderType.FULL:
+                final_border = {
+                    'name': 'BORDER', 'priority': self.priority - 1, 'type': 'B', 
+                    'size': border['size'], 'foreground': border['color'], 
+                    'x1': self.__true_pos()['x1'] - border['offset']['left'], 'x2': self.__true_pos()['x2'] + border['offset']['right'],
+                    'y1': self.__true_pos()['y1'] - (border['offset']['top'] + 0.2), 'y2': self.__true_pos()['y2'] + border['offset']['bottom']
                 }
-                generated_side_borders.append(line)
             else:
-                x_pos = self.__true_pos()['x1'] - border['offset']['left'] if border['side'] == 'left' else self.__true_pos()['x2'] + border['offset']['right']
-                line = {
-                    'name': f'SIDE_BORDER_{border['side'].upper()}', 'priority': self.priority + 1, 'type': 'L',
-                    'size': border['size'], 'foreground': border['color'],
-                    'x1': x_pos, 'x2': x_pos, 'y1': self.__true_pos()['y1'] - border['offset']['top'],
-                    'y2': self.__true_pos()['y2'] + border['offset']['bottom']# - (self.__true_pos()['y1'] - border['offset']['top']),
-                }
-                generated_side_borders.append(line)
-        for b in generated_side_borders:
-            all_sub_template_objects.append(b)
-
+                if border.border_type in [BorderType.TOP, BorderType.BOTTOM]:
+                    y_pos = self.__true_pos()['y1'] - border['offset']['top'] if border['side'] == 'top' else self.__true_pos()['y2'] + border['offset']['bottom']
+                    final_border = {
+                        'name': f'SIDE_BORDER_{border['side'].upper()}', 'priority': self.priority + 1, 'type': 'L',
+                        'size': border['size'], 'foreground': border['color'],
+                        'x1': self.__true_pos()['x1'] - border['offset']['left'], 'y1': y_pos, 'y2': y_pos,
+                        'x2': self.__true_pos()['x2'] + border['offset']['right']# - (self.__true_pos()['x1'] - border['offset']['left'])
+                    }
+                else:
+                    x_pos = self.__true_pos()['x1'] - border['offset']['left'] if border['side'] == 'left' else self.__true_pos()['x2'] + border['offset']['right']
+                    final_border = {
+                        'name': f'SIDE_BORDER_{border['side'].upper()}', 'priority': self.priority + 1, 'type': 'L',
+                        'size': border['size'], 'foreground': border['color'],
+                        'x1': x_pos, 'x2': x_pos, 'y1': self.__true_pos()['y1'] - border['offset']['top'],
+                        'y2': self.__true_pos()['y2'] + border['offset']['bottom']# - (self.__true_pos()['y1'] - border['offset']['top']),
+                    }
+            all_sub_template_objects.append(final_border)
         return all_sub_template_objects
 
 
@@ -320,14 +325,22 @@ class Table(Stack):
 
 # MARK: Text
 class Text(Document_Object):
-    def __init__(self, text: str, font_size: float, x, y, width, height, priority, font = 'helvetica', align = 'L', multiline = False, underline = False, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}, link = ''):
+    def __init__(self, text: str, font_size: float, x, y, width, height, priority, 
+                 font = 'helvetica', align = 'L', font_color = 0x000000, 
+                 multiline = False, underline = False, bold = False, italic = False,
+                 margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}, link = ''):
         super().__init__(x, y, width, height, priority, margin)
         self.text = text
         self.font = font
         self.align = align
         self.font_size = font_size
+        self.font_color = font_color
+
         self.multiline = multiline
         self.underline = underline
+        self.bold = bold
+        self.italic = italic
+
         self.link = link
         # Later going to adjust height to include multiple lines
         # self.height = get_text_length(text, font, font_size)
@@ -339,8 +352,11 @@ class Text(Document_Object):
         base_template_object['font'] = self.font
         base_template_object['align'] = self.align
         base_template_object['size'] = self.font_size
+        base_template_object['foreground'] = self.font_color
         base_template_object['multiline'] = self.multiline
         base_template_object['underline'] = int(self.underline == True)
+        base_template_object['bold'] = int(self.bold == True)
+        base_template_object['italic'] = int(self.italic == True)
         base_template_object['link'] = self.link
 
         return [base_template_object] + super().render_as_flex_template_object()[1:] + self.render_borders()
@@ -348,30 +364,32 @@ class Text(Document_Object):
 
 # MARK: Lines
 class Line(Document_Object):
-    def __init__(self, x, y, width, height, priority, size = 0.2, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+    def __init__(self, x, y, width, height, priority, size = 0.2, color = 0x000000, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
         super().__init__(x, y, width, height, priority, margin)
         self.size = size
+        self.color = color
 
     def render_item_as_flex_template_objects(self):
         base_template_object = super().render_as_flex_template_object()[0]
         base_template_object['type'] = 'L'
         base_template_object['size'] = self.size
+        base_template_object['foreground'] = self.color
 
         return [base_template_object] + self.render_borders()
     
-    def __repr__(self):
+    def __str__(self):
         return f'{(self.x, self.y, self.width, self.height)}, size = {self.size}, margin = {(self.margin['top'], self.margin['right'], self.margin['bottom'], self.margin['left'])}'
     
 class HLine(Line):
-    def __init__(self, x, y, width, priority, size = 0.2, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
-        super().__init__(x, y, width, 0, priority, size, margin)
+    def __init__(self, x, y, width, priority, size = 0.2, color = 0x000000, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+        super().__init__(x, y, width, 0, priority, size, color, margin)
 
     def render_item_as_flex_template_objects(self):
         return super().render_item_as_flex_template_objects()
 
 class VLine(Line):
-    def __init__(self, x, y, height, priority, size = 0.2, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
-        super().__init__(x, y, 0, height, priority, size, margin)
+    def __init__(self, x, y, height, priority, size = 0.2, color = 0x000000, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+        super().__init__(x, y, 0, height, priority, size, color, margin)
 
     def render_item_as_flex_template_objects(self):
         return super().render_item_as_flex_template_objects()
@@ -379,14 +397,16 @@ class VLine(Line):
 
 # MARK: Box  
 class Box(Document_Object): 
-    def __init__(self, x, y, width, height, priority, size = 0.2, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+    def __init__(self, x, y, width, height, priority, size = 0.2, color = 0x000000, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
         super().__init__(x, y, width, height, priority, margin)
         self.size = size
+        self.color = color
 
     def render_item_as_flex_template_objects(self):
         base_template_object = super().render_as_flex_template_object()[0]
         base_template_object['type'] = 'B'
         base_template_object['size'] = self.size
+        base_template_object['foreground'] = self.color
         
         return [base_template_object]
     
@@ -406,49 +426,9 @@ def to_matrix(l, n):
 
 # MARK: Testing
 if __name__=="__main__":
-    full_page_stack_2 = Table(0, 0, 0, 0, 0, [
-        VStack(0, 0, 78.5, 0, 0, [
-            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-        ]),
-        VStack(0, 0, 78.5, 0, 0, [
-            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-        ]),
-        VStack(0, 0, 78.5, 0, 0, [
-            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-        ]),
-        VStack(0, 0, 78.5, 0, 0, [
-            Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-            Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-        ])
-    ], (2, 2), 5, 9, margin = {'top': 20, 'left': 20}).with_border(0.2)#.add_single_border('left', 0.4)
-
-    testing_stack = VStack(0, 0, 78.5, 0, 0, [
-        Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 5, 0),
-        Text('Created a non-profit organization to allow students to improve their community while getting sought after community service hours', 8, 0, 0, 78.5, 3, 0, multiline = True)
-    ]).with_margin({'top': 20, 'left': 20})
-
-
-    testing_text = Text('The Walks for Dogs Foundation', 11, 0, 0, 78.5, 9, 0).with_margin({'top': 20, 'left': 20}).with_border(0.2, offset={'left': 2})#.add_single_border('left', 0.2, 0)
-    testing_offset = {'left': 2, 'right': 2, 'bottom': 0}
-    testing_bottom_border = HLine(testing_text.x + testing_text.left_margin - testing_offset['left'], 
-                                testing_text.y + testing_text.top_margin + testing_text.height + testing_offset['bottom'], 
-                                testing_text.width + testing_offset['left'] + testing_offset['right'], 
-                                0, 0.3)
-
-    work_stack = VStack(0, 0, 150, 0, 0, [
-        Text('DEC 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3),
-        VStack(6, 0, 140, 0, 0, [
-            Text('Research Assistant', 16, 0, 0, 134, 6, 0, 'helvetica').with_margin({'top': 1}),
-            Text('The Central Bank of Armenia', 12, 0, 0, 134, 4, 0, 'helvetica'),
-                VStack(4, 0, 131, 0, 0, [
-                    Text(x, 8, 0, 0, 126, 3, 0) for x in ['Point 1', 'Point 2', 'Point 3']
-                ], 0.8).with_margin({'top': 0.5})
-            ]).with_border(0.3).add_single_border('left', 1, 0),
-        Text('OCT 2024', 8, 0, 0, 18, 5, 0, 'dejavu-sans-mono', 'C').with_border(0.3).with_margin({'top': 1.5}),
-    ]).with_margin({'left': 5})
+    testing_border_stack = Text('Testing Borders', 12, 10, 10, 80, 10, 0, font_color = 0xff0000, bold = False, italic = False, underline = False).with_borders(
+        Border()
+    )
 
     # for obj in full_page_stack_2.render_item_as_flex_template_objects():
     #     print(obj.__repr__())
@@ -457,7 +437,7 @@ if __name__=="__main__":
     pdf.add_page()
     pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
 
-    templ = FlexTemplate(pdf, elements = work_stack.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
+    templ = FlexTemplate(pdf, elements = testing_border_stack.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
     templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 
     pdf.set_margin(0)

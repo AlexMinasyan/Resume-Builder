@@ -38,7 +38,7 @@ if __name__ == "__main__":
     # MARK: Running Specs
 
     # Schematics: python3 testing_templates.py [testing] [data_file] [prebuild_file]
-    testing = True if len(sys.argv) <= 1 or str(sys.argv[1]).lower  == 'true' == None else False
+    testing = True if len(sys.argv) <= 1 or str(sys.argv[1]).lower()  == 'true' else False
 
     # Getting the JSON file
     json_file_name = None
@@ -57,11 +57,14 @@ if __name__ == "__main__":
 
     # Getting the User's choices
     user_specs = ''
-    if len(sys.argv) > 3:
+    if specs_file_name != None:
+        with open(f'{specs_file_name}.json') as f:
+            user_specs = json.load(f)
+    elif len(sys.argv) > 3:
         specs_file_name = str(sys.argv[3])
         with open(f'{specs_file_name}.json') as f:
             user_specs = json.load(f)
-    else: # 
+    else:
         user_specs = prompt_specs(user_data)
 
     new_user_data = filter_out_user_data(user_data, user_specs)

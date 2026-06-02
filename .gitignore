@@ -1,4 +1,4 @@
-# OS generated files #
+# OS / VSCode generated files #
 ######################
 .DS_Store
 .DS_Store?
@@ -14,3 +14,4 @@ settings.json
 User Data/admin_info_english.json
 __pycache__
 Testing Results/my_actual_resume.pdf
+Testing Results/testing_template_version_2.pdf
