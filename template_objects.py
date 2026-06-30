@@ -1,6 +1,6 @@
 # MARK: Packages
 import copy, math
-from PIL import ImageFont
+import PIL
 from fpdf import FlexTemplate, FPDF
 from enum import Enum
 
@@ -43,7 +43,7 @@ class Border():
 # Note: Single Borders cannot have color so far, but that will be changed soon
 class Document_Object():
     def __init__(self, x: float, y: float, width: float, height: float, priority: int,
-                 margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+                 margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}, link = ''):
         self.x = x
         self.y = y
         self.width = width
@@ -52,13 +52,13 @@ class Document_Object():
         self.margin = margin
         self.borders = []
         self.side_borders = []
+        self.link = link
 
         self.set_margin(margin)
         self.total_border_size = 0
         self.total_border_color = 0
         self.total_border_offset = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}
 
-    # For margin, excepts a dictionary of 'top', 'right', 'bottom', and 'left' keys with values being an int determining the size
     def set_margin(self, margin):
         if not set(margin.keys()).issubset({'top', 'right', 'bottom', 'left'}):
             raise Exception("you must specific at least one of 'top', 'right', 'bottom', or 'left' and no others keys")
@@ -68,11 +68,9 @@ class Document_Object():
         self.bottom_margin = margin['bottom'] if 'bottom' in margin else 0
         self.left_margin = margin['left'] if 'left' in margin else 0
 
-    # Allows one to remove the margin
     def remove_margin(self):
         self.top_margin, self.right_margin, self.bottom_margin, self.left_margin = (0, 0, 0, 0)
 
-    # Re-returns the object with an added margin (for a Swift-like programming style)
     def with_margin(self, margin):
         self.set_margin(margin)
         return self
@@ -81,7 +79,6 @@ class Document_Object():
         for border in args:
             self.borders.append(border)     
     
-    # Re-returns the object with a border
     def with_borders(self, *args: Border):
         self.add_borders(*args)
         return self
@@ -90,13 +87,21 @@ class Document_Object():
     def __true_pos(self):
         return {'x1': self.x + self.left_margin, 'y1': self.y + self.top_margin, 'x2': self.x + self.left_margin + self.width + self.right_margin, 'y2': self.y + self.top_margin + self.height + self.bottom_margin }
 
+    def add_link(self, link):
+        self.link = link
+
+    def with_link(self, link):
+        self.add_link(link)
+        return self
+
     # Returns the list of objects of the PDF Styling
     # Note an Important Difference: classic borders take the original position and squish the object into the bounds of the border and its offset.
     # Single Borders operate by adjusting their offsets to a locked objects, the object remains fixed and the border is shifted.
     def render_as_flex_template_object(self):
         base_template_object = {
             'name': 'OBJECT', 'priority': self.priority,
-            'x1': self.__true_pos()['x1'], 'x2': self.__true_pos()['x2'], 'y1': self.__true_pos()['y1'], 'y2': self.__true_pos()['y2']
+            'x1': self.__true_pos()['x1'], 'x2': self.__true_pos()['x2'], 'y1': self.__true_pos()['y1'], 'y2': self.__true_pos()['y2'],
+            'link': self.link
         }
         return [base_template_object]
 
@@ -341,7 +346,6 @@ class Text(Document_Object):
         self.bold = bold
         self.italic = italic
 
-        self.link = link
         # Later going to adjust height to include multiple lines
         # self.height = get_text_length(text, font, font_size)
 
@@ -410,10 +414,23 @@ class Box(Document_Object):
         
         return [base_template_object]
     
+# MARK: Image
+class Image(Document_Object):
+    def __init__(self, x, y, width, height, priority, image_link, margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}):
+        super().__init__(x, y, width, height, priority, margin)
+        self.image_link = image_link
+
+    def render_item_as_flex_template_objects(self):
+        base_template_object = super().render_as_flex_template_object()[0]
+        base_template_object['type'] = 'I'
+        base_template_object['text'] = self.image_link
+
+        return [base_template_object]
+    
 
 # MARK: Some Extensions
 def get_text_length(text, font, size):
-    image_font = ImageFont.truetype(font, size)
+    image_font = PIL.ImageFont.truetype(font, size)
     pxls = image_font.getlength(text)
     return px_to_mm(pxls)
 
@@ -423,12 +440,15 @@ def px_to_mm(px, dpi = 67):
 def to_matrix(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
 
+def image_size(path):
+    im = PIL.Image.open(path)
+    width, height = im.size
+    return (width, height)
+
 
 # MARK: Testing
 if __name__=="__main__":
-    testing_border_stack = Text('Testing Borders', 12, 10, 10, 80, 10, 0, font_color = 0xff0000, bold = False, italic = False, underline = False).with_borders(
-        Border()
-    )
+    testing_border_stack = Image(10, 10, 50, 50, 0, image_link = '2026-01-23 15.28.16.jpg')
 
     # for obj in full_page_stack_2.render_item_as_flex_template_objects():
     #     print(obj.__repr__())
