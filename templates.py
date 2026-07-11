@@ -75,7 +75,7 @@ class TimelineWithResearchTemplate(Template):
                     Text(self.user_data['contact']['email'], 8, 0, 0, 49, 4, 0), 
                     Text(self.user_data['contact']['phone'], 8, 0, 0, 49, 4, 0),
                     Text(self.user_data['contact']['residence'], 8, 0, 0, 49, 4, 0),
-                    Text(f'GitHub: {self.user_data['contact']['github']}', 8, 0, 0, 49, 4, 0).with_link('https://github.com/AlexMinasyan') # Links don't work yet
+                    Text(f'GitHub: {self.user_data['contact']['github']}', 8, 0, 0, 49, 4, 0, auto_resizing = True, font_file_link = '/System/Library/Fonts/Helvetica.ttc').with_link('https://github.com/AlexMinasyan') # Links don't work yet
                 ], 2).with_padding({'top': 2}),
                 Text('Skills', 13, 0, 0, 49, 6, 0, 'helvetica', 'L', False, True).with_margin({'top': 7.5}),
                 FreeStack(0, 0, 47, 0, 0, 

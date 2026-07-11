@@ -1,6 +1,7 @@
 # MARK: Packages
 import copy, math
 import PIL
+from PIL import ImageFont
 from fpdf import FlexTemplate, FPDF
 from enum import Enum
 
@@ -333,11 +334,14 @@ class Text(Document_Object):
     def __init__(self, text: str, font_size: float, x, y, width, height, priority, 
                  font = 'helvetica', align = 'L', font_color = 0x000000, 
                  multiline = False, underline = False, bold = False, italic = False,
-                 margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}, link = ''):
-        super().__init__(x, y, width, height, priority, margin)
+                 margin: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left' : 0}, link = '', auto_resizing = False, font_file_link = ''):
+        
+        auto_width = px_to_mm(get_text_size_px(text, font_size, font_file_link)) + 2 if auto_resizing == True else width
+
+        super().__init__(x, y, auto_width, height, priority, margin, link = link)
         self.text = text
         self.font = font
-        self.align = align
+        self.align = align if auto_resizing == False else 'C'
         self.font_size = font_size
         self.font_color = font_color
 
@@ -345,6 +349,8 @@ class Text(Document_Object):
         self.underline = underline
         self.bold = bold
         self.italic = italic
+        self.link = link
+
 
         # Later going to adjust height to include multiple lines
         # self.height = get_text_length(text, font, font_size)
@@ -361,10 +367,9 @@ class Text(Document_Object):
         base_template_object['underline'] = int(self.underline == True)
         base_template_object['bold'] = int(self.bold == True)
         base_template_object['italic'] = int(self.italic == True)
-        base_template_object['link'] = self.link
 
         return [base_template_object] + super().render_as_flex_template_object()[1:] + self.render_borders()
-    
+
 
 # MARK: Lines
 class Line(Document_Object):
@@ -429,13 +434,16 @@ class Image(Document_Object):
     
 
 # MARK: Some Extensions
-def get_text_length(text, font, size):
-    image_font = PIL.ImageFont.truetype(font, size)
-    pxls = image_font.getlength(text)
-    return px_to_mm(pxls)
+def get_text_size_px(text, font_size, font_name):
+    font = ImageFont.truetype(font_name, font_size)
+    size = font.getlength(text)
+    return size
 
 def px_to_mm(px, dpi = 67):
     return (px * 25.4) / dpi
+
+def px_to_pt(px):
+    return 0.75 * px
 
 def to_matrix(l, n):
     return [l[i:i+n] for i in range(0, len(l), n)]
@@ -446,9 +454,18 @@ def image_size(path):
     return (width, height)
 
 
+
 # MARK: Testing
 if __name__=="__main__":
+
     testing_border_stack = Image(10, 10, 50, 50, 0, image_link = '2026-01-23 15.28.16.jpg')
+    testing_text = Text('Testing Text 2', 14, 0, 20, 42.46 + 2, 13, 0, 'dejavu-sans-mono', align = 'C', auto_resizing = True, font_file_link = '/Users/alex/Documents/Projects/Resume Builder/dejavu-sans-mono/DejaVuSansMono.ttf').with_link('https://github.com/AlexMinasyan').with_borders(Border(BorderType.FULL))
+    # testing_text = Text('Testing Text 2', 14, 0, 20, 210, 13, 0, 'helvetica', auto_resizing = True, font_file_link = '/System/Library/Fonts/Helvetica.ttc').with_link('https://github.com/AlexMinasyan').with_borders(Border(BorderType.FULL))
+    #
+    print(testing_text.width)
+    # print(testing_text.width)# , link = 'https://www.youtube.com', 
+    #                     auto_resizing = True, font_file_link = '/System/Library/Fonts/Helvetica.ttc').with_borders(Border(BorderType.FULL))
+    # print(testing_text.width)
 
     # for obj in full_page_stack_2.render_item_as_flex_template_objects():
     #     print(obj.__repr__())
@@ -457,7 +474,12 @@ if __name__=="__main__":
     pdf.add_page()
     pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
 
-    templ = FlexTemplate(pdf, elements = testing_border_stack.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
+    all_rendering_items = testing_text.render_item_as_flex_template_objects()
+    for item in all_rendering_items:
+        if 'link' in item.keys() and item['link'] != '':
+            pdf.link(x = item['x1'], y = item['y1'], w = item['x2'] - item['x1'], h = item['y2'] - item['y1'], link = item['link'])
+
+    templ = FlexTemplate(pdf, elements = testing_text.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
     templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 
     pdf.set_margin(0)
