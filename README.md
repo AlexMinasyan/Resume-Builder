@@ -3,6 +3,8 @@ This program is to allow one to more easily create and adjust their resume for v
 
 [Result Test 1](Testing%20Results/testing.pdf)
 
+This allows users to save large amounts of time when on dense job searches as well as when they are active in extracurriculars and want to update their resume frequently. This also allows one to not have to go and create a resume on their own, just look to their past for the useful information and select a template. 
+
 ### How to Use
 Input your information in the [json](User%20Data/dummy_info.json) file. Then simply run the python file, which gives you various specifications based on the arguments provided. Run
 ```
