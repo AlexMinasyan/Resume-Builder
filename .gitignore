@@ -12,6 +12,7 @@ settings.json
 # Specific Files #
 ##################
 User Data/admin_info_english.json
+User Data/richi_info.json
 __pycache__
 Testing Results/my_actual_resume.pdf
 Testing Results/testing_template_version_2.pdf

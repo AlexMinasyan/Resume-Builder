@@ -75,6 +75,9 @@ if __name__ == "__main__":
     my_template = TimelineWithResearchTemplate(new_user_data)
     full_page_hstack_2 = my_template.generate_overall_template()
 
+    # for obj in full_page_hstack_2.render_item_as_flex_template_objects():
+    #     print(obj.__repr__())
+
     pdf = FPDF(orientation = 'portrait', format = 'A4')
     pdf.add_page()
     pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
@@ -93,13 +96,13 @@ if __name__ == "__main__":
     pdf.output(output_link)
 
 # MARK: TO-DO
-# Idea: the link looks wierd because it spans the entire column, create a function or a specification that fits the width to the length of the string
+# (X) Idea: the link looks wierd because it spans the entire column, create a function or a specification that fits the width to the length of the string
 # Idea: call `render_item_as_flex_template_objects` and a separate get objects just to obtain the result of the former, without redoing all calcuations (or just run a resent in the `render_item_as_flex_template_objects`)
-# Idea: Add clickable links to each work object and project
+# (X) Idea: Add clickable links to each work object and project
 
 # Filter Skills Objects
-# Include Testing in command
-# Run file with certain specifications for faster running
+# (X) Include Testing in command
+# (X) Run file with certain specifications for faster running
 # For Template Specifications, I can later add a character limit for the fit
 # Figure out how to rearrange the fit for a FreeStack (make it a parameter `auto_fit`)
 # Skills Categories

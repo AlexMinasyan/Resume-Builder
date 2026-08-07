@@ -95,6 +95,10 @@ class Document_Object():
         self.add_link(link)
         return self
 
+    def bounding_box(self):
+        # x_1, y_1, x_2, y_2
+        return f'(x_1: {self.x}, y_1: {self.y}, x_2: {self.x + self.width}, y_2: {self.y + self.height})'
+
     # Returns the list of objects of the PDF Styling
     # Note an Important Difference: classic borders take the original position and squish the object into the bounds of the border and its offset.
     # Single Borders operate by adjusting their offsets to a locked objects, the object remains fixed and the border is shifted.
@@ -455,31 +459,37 @@ def image_size(path):
 
 
 
+
 # MARK: Testing
 if __name__=="__main__":
 
-    testing_border_stack = Image(10, 10, 50, 50, 0, image_link = '2026-01-23 15.28.16.jpg')
-    testing_text = Text('Testing Text 2', 14, 0, 20, 42.46 + 2, 13, 0, 'dejavu-sans-mono', align = 'C', auto_resizing = True, font_file_link = '/Users/alex/Documents/Projects/Resume Builder/dejavu-sans-mono/DejaVuSansMono.ttf').with_link('https://github.com/AlexMinasyan').with_borders(Border(BorderType.FULL))
-    # testing_text = Text('Testing Text 2', 14, 0, 20, 210, 13, 0, 'helvetica', auto_resizing = True, font_file_link = '/System/Library/Fonts/Helvetica.ttc').with_link('https://github.com/AlexMinasyan').with_borders(Border(BorderType.FULL))
-    #
-    print(testing_text.width)
-    # print(testing_text.width)# , link = 'https://www.youtube.com', 
-    #                     auto_resizing = True, font_file_link = '/System/Library/Fonts/Helvetica.ttc').with_borders(Border(BorderType.FULL))
-    # print(testing_text.width)
+    testing_stack_outer = VStack(0, 0, 210, 297, 0, [
+        # Box(2, 0, 206, 200, 1, 0.5, 0xFF0000, margin = { 'top': 2, 'right': 0, 'bottom': 2, 'left': 0 }),
+        # VStack(2, 0, 206, 200, 1, children = [
+        #     Box(2, 0, 206, 60, 1, 0.3, margin = { 'top': 2, 'right': 0, 'bottom': 2, 'left': 0 }),
+        #     Box(2, 0, 206, 60, 1, 0.3, margin = { 'top': 2, 'right': 0, 'bottom': 2, 'left': 0 }),
+        # ], margin = { 'top': 2, 'right': 0, 'bottom': 2, 'left': 0 })
+        Table(2, 0, 206, 200, 1, children = [
+            Box(2, 0, 102, 40, 1, 0.3, 0x0000FF), Box(2, 0, 102, 40, 1, 0.3, 0x0000FF),
+            Box(2, 0, 102, 40, 1, 0.3, 0x0000FF), Box(2, 0, 102, 40, 1, 0.3, 0x0000FF)
+        ], size = (2, 2), x_gap = 2, y_gap = 2, margin = { 'top': 2, 'right': 0, 'bottom': 2, 'left': 0 }).with_borders(Border(BorderType.FULL)),
+        # Text('Testing Text', 14, 20, 20, 200, 13, 0)
+    ])
 
-    # for obj in full_page_stack_2.render_item_as_flex_template_objects():
-    #     print(obj.__repr__())
+
+    for obj in testing_stack_outer.render_item_as_flex_template_objects():
+        print(obj['y2'])
 
     pdf = FPDF(orientation = 'portrait', format = 'A4')
     pdf.add_page()
     pdf.add_font('dejavu-sans-mono', style = '', fname = 'dejavu-sans-mono/DejaVuSansMono.ttf')
 
-    all_rendering_items = testing_text.render_item_as_flex_template_objects()
+    all_rendering_items = testing_stack_outer.render_item_as_flex_template_objects()
     for item in all_rendering_items:
         if 'link' in item.keys() and item['link'] != '':
             pdf.link(x = item['x1'], y = item['y1'], w = item['x2'] - item['x1'], h = item['y2'] - item['y1'], link = item['link'])
 
-    templ = FlexTemplate(pdf, elements = testing_text.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
+    templ = FlexTemplate(pdf, elements = testing_stack_outer.render_item_as_flex_template_objects())# + testing_bottom_border.render_item_as_flex_template_objects())
     templ.render(offsetx = 0, offsety = 0, rotate = 0, scale = 1)
 
     pdf.set_margin(0)
