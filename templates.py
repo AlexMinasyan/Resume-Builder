@@ -1,4 +1,4 @@
-from template_objects import HStack, VStack, Text, FreeStack, VLine, Table, Border, BorderType
+from template_objects import Stack, HStack, VStack, Table, Text, FreeStack, HLine, VLine, Table, Border, BorderType
 from datetime import datetime
 from functools import reduce
 import operator
@@ -47,6 +47,128 @@ class Template():
         for key in list(tem_spe.keys() - ['single_required_items']):
             if len(usr_dat[key]) < tem_spe[key][0] or len(usr_dat[key]) > tem_spe[key][1]:
                 raise Exception(f'`{key.capitalize()}` Objects has a wrong number of objects in given user data.')
+
+# Note: for the `templ_specs`, it is a list containing [MIN, MAX]
+
+#MARK: DenseTemplate
+class DenseTemplate(Template):
+    def __init__(self, user_data):
+        templ_specs = {
+            "single_required_items": ["bio-name", "bio-title", "bio-description", "contact-email", "contact-phone", "contact-residence", "contact-github"],
+            "work": [1, 6],
+            "education": [1, 2],
+            "projects": [1, 4],
+            "research": [1, 1],
+            "skills": [1, 50],
+            "languages": [1, 5]
+        }
+        super().__init__(user_data, template_specifications = templ_specs)
+
+    def generate_overall_template(self):
+        return VStack(0, 0, 210, 297, 0, [
+
+            VStack(0, 0, 210, 70, 0, [
+                HStack(0, 0, 210, 18, 0, [
+                    VStack(0, 0, 95, 18, 0, [
+                        Text(self.user_data['bio']['name'], 22, 0, 0, 90, 10, 0),
+                        Text(self.user_data['bio']['title'], 14, 0, 0, 90, 8, 0)
+                    ]).with_padding( { 'left': 5 } ),
+                    Text(self.user_data['bio']['description'], 7, 0, 0, 110, 18, 0, multiline = True).with_margin( {'left': 5 })
+                ]),
+                HLine(5, 0, 210 - 10, 0),
+                HStack(0, 0, 210, 10, 0, [
+                    Text(self.user_data['contact']['email'], 10, 0, 0, 40, 10, 0, align = 'C'),
+                    Text(self.user_data['contact']['phone'], 10, 0, 0, 40, 10, 0, align = 'C'),
+                    Text(self.user_data['contact']['residence'], 10, 0, 0, 40, 10, 0, align = 'C'),
+                    Text(self.user_data['contact']['github'], 10, 0, 0, 40, 10, 0, align = 'C')
+                ], inner_gap = (210 - 4 * 40) / 5).with_padding( { 'left': (210 - 4 * 40) / 5, 'right': (210 - 4 * 40) / 5 } ),
+                HLine(5, 0, 210 - 10, 0)
+            ]).with_margin({ 'top': 5 }),
+
+            VStack(0, 0, 210, 0, 0, [
+                Text("Work Experience", 14, 5, 0, 60, 8, 0, bold = True, underline = True).with_margin( { 'top': 1 } ),
+                Table(0, 0, 210, 0, 0,
+                    [self.generate_work_object(work) for work in self.user_data['work']]
+                , size = (2, 3), x_gap = 5, y_gap = 5),
+                Text("Education", 14, 5, 0, 60, 8, 0, bold = True, underline = True).with_margin( { 'top': 1 } ),
+                Table(0, 0, 210, 0, 0,
+                    [self.generate_education_object(work) for work in self.user_data['education']]
+                , size = (2, 1), x_gap = 5, y_gap = 5),
+                Text("Research", 14, 5, 0, 60, 8, 0, bold = True, underline = True).with_margin( { 'top': 1 } ),
+                VStack(0, 0, 210, 0, 0, 
+                    [self.generate_research_object(research) for research in self.user_data['research']]
+                ).with_padding( { 'left': 4 } ),
+                Text("Projects", 14, 5, 0, 60, 8, 0, bold = True, underline = True).with_margin( { 'top': 4 } ),
+                Table(0, 0, 210, 0, 0, 
+                    [self.generate_project_object(proj) for proj in self.user_data['projects']]
+                , (2, 2), 5, 5).with_margin( { 'left': 4, 'right': 4 } ),
+                Text("Skills", 14, 5, 0, 60, 8, 0, bold = True, underline = True).with_margin( { 'top': 4 } ),
+                FreeStack(0, 0, 202, 0, 0, 
+                    [self.generate_skill_object(skill) for skill in self.user_data['skills']],
+                1, 1).with_margin( { 'left': 4, 'right': 4 } ),
+                HStack(0, 0, 202, 0, 0, 
+                    [self.generate_language_object(lang) for lang in self.user_data['languages']]
+                , 10).with_margin( { 'left': 4, 'right': 4, 'top': 7 } )
+            ])
+            
+        ])
+
+    def generate_work_object(self, work_object):
+        start_date = convert_date_to_desired_format(work_object['start-date'], '%m/%Y', '%b %Y').upper()
+        end_date = 'PRESENT' if work_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(work_object['end-date'], '%m/%Y', '%b %Y').upper()
+    
+        work_stack = VStack(0, 0, 102.5, 0, 0, [
+            VStack(4, 0, 101, 0, 0, [
+                Text(work_object['title'], 14, 0, 0, 93, 6, 0, 'helvetica').with_margin({'top': 1}),
+                Text(work_object['name'], 11, 0, 0, 93, 4, 0, 'helvetica'),
+                Text(f'{start_date} - {end_date}', 8, 0, 0, 35, 5, 0, italic = True),
+                    VStack(2, 0, 93, 0, 0, [
+                        Text(f' - {x}', 6, 0, 0, 126, 3, 0) for x in work_object['tasks-achievements']
+                    ], 0.8)
+                ]),
+        ])
+    
+        return work_stack
+
+    def generate_education_object(self, edu_object):
+        start_date = convert_date_to_desired_format(edu_object['start-date'], '%m/%Y', '%b %Y').upper()
+        end_date = 'PRESENT' if edu_object['end-date'] == 'PRESENT' else convert_date_to_desired_format(edu_object['end-date'], '%m/%Y', '%b %Y').upper()
+            
+        work_stack = VStack(0, 0, 102.5, 0, 0, [
+            VStack(4, 0, 101, 0, 0, [
+                Text(edu_object['degree'], 14, 0, 0, 93, 6, 0, 'helvetica').with_margin({'top': 1}),
+                Text(edu_object['name'], 11, 0, 0, 93, 4, 0, 'helvetica'),
+                Text(f'{start_date} - {end_date}', 8, 0, 0, 35, 5, 0, italic = True),
+                    VStack(2, 0, 93, 0, 0, [
+                        Text(f' - {x}', 6, 0, 0, 126, 3, 0) for x in edu_object['courses-important']
+                    ], 0.8)
+                ]),
+            ])
+            
+        return work_stack
+
+    def generate_research_object(self, research_object):
+        research_stack = VStack(0, 0, 205, 0, 0, [
+            Text(research_object['name'], 9, 0, 0, 199, 5, 0),
+            Text(research_object['description'], 7, 0, 0, 199, 3, 0, multiline = True)
+        ])
+        return research_stack
+
+    def generate_project_object(self, project_object):
+        project_stack = VStack(0, 0, 99.5, 0, 0, [
+            Text(project_object['name'], 11, 0, 0, 99.5, 5, 0),
+            Text(project_object['description'], 8, 0, 0, 99.5, 3, 0, multiline = True)
+        ])
+        return project_stack
+
+    def generate_skill_object(self, skill):
+        return Text(skill['name'], 8, 0, 0, 1.7 * len(skill['name']) + 2.1, 5, 0, 'dejavu-sans-mono').with_borders(Border())
+
+    def generate_language_object(self, lang):
+        return VStack(0, 0, 48, 0, 0, [
+            Text(lang['name'], 10, 0, 0, 48, 5, 0, 'helvetica').with_margin({'left': 0}), 
+            Text(lang['level'], 8, 0, 0, 47, 4, 0).with_margin({'left': 1})
+        ])
 
 #MARK: TimelineWithResearchTemplate
 class TimelineWithResearchTemplate(Template):

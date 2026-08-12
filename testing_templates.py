@@ -1,7 +1,7 @@
 from fpdf import FlexTemplate, FPDF
 import json, sys, glob
 from pick import pick
-from templates import TimelineWithResearchTemplate, TimelineBaseTemplate
+from templates import TimelineWithResearchTemplate, TimelineBaseTemplate, DenseTemplate
 
 
 # MARK: User Data
@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
 
     # MARK: Generation
-    my_template = TimelineWithResearchTemplate(new_user_data)
+    my_template = DenseTemplate(new_user_data)
     full_page_hstack_2 = my_template.generate_overall_template()
 
     # for obj in full_page_hstack_2.render_item_as_flex_template_objects():
